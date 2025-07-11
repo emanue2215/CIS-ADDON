@@ -10,7 +10,7 @@
   "contact": {
     "sources": "https://github.com/emanue2215/CIS-ADDON"
   },
-  "icon": "https://imgur.com/kICvHZL",
+  "icon": "assets/template/cis-logo-star-wars-3.png",
   "environment": "client",
   "entrypoints": {
     "meteor": [
