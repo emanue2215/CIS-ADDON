@@ -1,31 +1,31 @@
 {
   "schemaVersion": 1,
   "id": "cis-addon",
-  "version": "${1.0.0}",
-  "name": "CIS-Addon",
+  "version": "1.0.0",
+  "name": "CIS-Addon"
   "description": "An addon made specialy for CIS 6B6T members",
   "authors": [
     "zorrilo197"
   ],
   "contact": {
-    "sources": ""
+    "sources": "https://github.com/emanue2215/CIS-ADDON"
   },
-  "icon": "assets/template/icon.png",
+  "icon": "https://imgur.com/kICvHZL",
   "environment": "client",
   "entrypoints": {
     "meteor": [
-      "com.example.addon.AddonTemplate"
+      "com.zorrilo197.cisaddon.CISAddon"
     ]
   },
   "mixins": [
-    "addon-template.mixins.json"
+    "cisaddon.mixins.json"
   ],
   "custom": {
     "meteor-client:color": "225,25,25"
   },
   "depends": {
     "java": ">=21",
-    "minecraft": ["${mc_version}"],
+    "minecraft": [">=1.21.5"],
     "meteor-client": "*"
   }
 }
