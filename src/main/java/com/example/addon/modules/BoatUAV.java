@@ -1,6 +1,6 @@
-package com.x310.clarity.modules;
+package com.zorrilo197.cisaddon.modules;
 
-import com.x310.clarity.Main;
+import com.zorrilo197.cisaddon.Main;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.Friends;
