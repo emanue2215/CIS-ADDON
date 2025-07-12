@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "cis-addon",
   "version": "1.0.0",
-  "name": "CIS-Addon"
+  "name": "CIS-Addon",
   "description": "An addon made specialy for CIS 6B6T members",
   "authors": [
     "zorrilo197"
