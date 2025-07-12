@@ -1,5 +1,6 @@
-package com.example.addon;
+package com.zorrilo197.cisaddon;
 
+import com.zorrilo197.cisaddon.modules.MapTracker;
 import com.example.addon.commands.CommandExample;
 import com.example.addon.hud.HudExample;
 import com.example.addon.modules.ModuleExample;
@@ -13,17 +14,18 @@ import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import org.slf4j.Logger;
 
-public class AddonTemplate extends MeteorAddon {
+public class CISAddon extends MeteorAddon {
     public static final Logger LOG = LogUtils.getLogger();
     public static final Category CATEGORY = new Category("CIS");
-    public static final HudGroup HUD_GROUP = new HudGroup("Example");
+    public static final HudGroup HUD_GROUP = new HudGroup("CIS");
 
     @Override
     public void onInitialize() {
-        LOG.info("Initializing Meteor Addon Template");
+        LOG.info("Initializing CIS Addon");
 
         // Modules
         Modules.get().add(new ModuleExample());
+Modules.get().add(new MapTracker(CATEGORY));
 
         // Commands
         Commands.add(new CommandExample());
@@ -34,16 +36,16 @@ public class AddonTemplate extends MeteorAddon {
 
     @Override
     public void onRegisterCategories() {
-        Modules.registerCategory(CIS);
+        Modules.registerCategory(CATEGORY);
     }
 
     @Override
     public String getPackage() {
-        return "com.cis.addon";
+        return "com.zorrilo197.cisaddon";
     }
 
     @Override
     public GithubRepo getRepo() {
-        return new GithubRepo("MeteorDevelopment", "meteor-addon-template");
+        return new GithubRepo("emanue2215", "CIS-ADDON");
     }
 }
