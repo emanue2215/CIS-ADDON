@@ -26,6 +26,7 @@ public class CISAddon extends MeteorAddon {
         // Modules
         Modules.get().add(new ModuleExample());
 Modules.get().add(new MapTracker(CATEGORY));
+modules.get().add(new BoatUAV(CATEGORY));
 
         // Commands
         Commands.add(new CommandExample());
