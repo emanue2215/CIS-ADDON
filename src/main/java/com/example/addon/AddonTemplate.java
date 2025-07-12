@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 
 public class AddonTemplate extends MeteorAddon {
     public static final Logger LOG = LogUtils.getLogger();
-    public static final Category CATEGORY = new Category("Example");
+    public static final Category CATEGORY = new Category("CIS");
     public static final HudGroup HUD_GROUP = new HudGroup("Example");
 
     @Override
@@ -39,7 +39,7 @@ public class AddonTemplate extends MeteorAddon {
 
     @Override
     public String getPackage() {
-        return "com.example.addon";
+        return "com.cis.addon";
     }
 
     @Override
