@@ -3,11 +3,15 @@ package com.zorrilo197.cisaddon.modules;
 import com.zorrilo197.cisaddon.CISAddon;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapDecoration;
 import net.minecraft.item.map.MapState;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.Map;
 import java.util.UUID;
@@ -25,14 +29,17 @@ public class MapTracker extends Module {
             return;
         }
 
-        ItemStack offhand = mc.player.getOffHandStack();
+        ClientPlayerEntity player = mc.player;
+        ItemStack offhand = player.getOffHandStack();
+
         if (!(offhand.getItem() instanceof FilledMapItem)) {
             ChatUtils.error("No filled map in offhand.");
             toggle();
             return;
         }
 
-        MapState state = FilledMapItem.getMapState(offhand, mc.world);
+        World world = mc.world;
+        MapState state = FilledMapItem.getMapState(offhand, world);
         if (state == null) {
             ChatUtils.error("Could not read map state.");
             toggle();
@@ -41,30 +48,36 @@ public class MapTracker extends Module {
 
         ChatUtils.info("=== Map Information ===");
         ChatUtils.info("Center: (" + state.getCenterX() + ", " + state.getCenterZ() + ")");
-        ChatUtils.info("Scale: " + state.getScale());
+        ChatUtils.info("Scale: "  + state.getScale());
         ChatUtils.info("Locked: " + state.isLocked());
 
-        Map<String, MapDecoration> decos = state.getDecorations();
-        if (!decos.isEmpty()) {
+        // Decorations (entities/markers on map)
+        Iterable<MapDecoration> decos = state.getDecorations();
+        if (decos.iterator().hasNext()) {
             ChatUtils.info("Decorations:");
-            for (MapDecoration dec : decos.values()) {
-                ChatUtils.info(" - " + dec.type().getName() + " @ (" + dec.x() + ", " + dec.z() + ")");
+            for (MapDecoration dec : decos) {
+                RegistryEntry<MapDecoration.Type> typeEntry = dec.type();
+                // Mostrar el identificador del tipo
+                Identifier id = typeEntry.getKey().getValue();
+                ChatUtils.info(" - " + id + " @ (" + dec.x() + ", " + dec.z() + ")");
             }
         } else {
             ChatUtils.info("Decorations: none");
         }
 
+        // Banners placed on map
         Map<UUID, MapState.MapBannerMarker> banners = state.getMarkers();
         if (!banners.isEmpty()) {
             ChatUtils.info("Banners:");
-            for (MapState.MapBannerMarker marker : banners.values()) {
-                BlockPos pos = marker.getPos();
+            for (MapState.MapBannerMarker banner : banners.values()) {
+                BlockPos pos = banner.getPos();
                 ChatUtils.info(" - Banner @ " + pos.toShortString());
             }
         } else {
             ChatUtils.info("Banners: none");
         }
 
+        // Tracking position (item frame)
         BlockPos framePos = state.getTrackingPosition();
         if (framePos != null) {
             ChatUtils.info("Frame position: " + framePos.toShortString());
@@ -72,6 +85,7 @@ public class MapTracker extends Module {
             ChatUtils.info("Frame position: none");
         }
 
-        toggle(); // se desactiva después de mostrar
+        toggle(); // Desactivar después de imprimir
     }
 }
+
