@@ -35,26 +35,25 @@ public class MapTracker extends Module {
             return;
         }
 
-        NbtCompound tag = offhand.getOrCreateNbt(); // Compatible método en mappings Yarn
+        NbtCompound tag = offhand.getOrCreateNbt();
 
         if (!tag.contains("map")) {
-            error("Map NBT tag not found.");
+            error("Map tag not found in NBT.");
             toggle();
             return;
         }
 
-        int mapId = tag.getInt("map"); // Este sí es seguro con Yarn
+        int mapId = tag.getInt("map");
         info("Map ID: " + mapId);
 
         MapState state = FilledMapItem.getMapState(offhand, mc.world);
         if (state != null) {
-            // Usamos el campo directamente porque los mappings mojang usan método `scale()` y Yarn `scale`
-            info("Map scale: " + state.scale);
+            info("Map scale: " + state.scale); // Yarn mappings: campo público
         } else {
             warning("Map state is null.");
         }
 
-        toggle(); // Disable after one use
+        toggle(); // Desactiva el módulo tras un uso
     }
 
     private void info(String message) {
