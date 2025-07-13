@@ -11,8 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 
-import java.util.OptionalInt;
-
 public class MapTracker extends Module {
     public MapTracker() {
         super(CATEGORY, "map-tracker", "Displays the ID and scale of the map in your offhand.");
@@ -37,26 +35,21 @@ public class MapTracker extends Module {
             return;
         }
 
-        NbtCompound tag = offhand.getNbt();
-        if (tag == null || !tag.contains("map")) {
-            error("Map NBT missing or invalid.");
+        NbtCompound tag = offhand.getOrCreateNbt(); // Compatible método en mappings Yarn
+
+        if (!tag.contains("map")) {
+            error("Map NBT tag not found.");
             toggle();
             return;
         }
 
-        OptionalInt mapIdOpt = FilledMapItem.getMapId(tag);
-        if (mapIdOpt.isEmpty()) {
-            error("Could not read map ID.");
-            toggle();
-            return;
-        }
-
-        int mapId = mapIdOpt.getAsInt();
+        int mapId = tag.getInt("map"); // Este sí es seguro con Yarn
         info("Map ID: " + mapId);
 
         MapState state = FilledMapItem.getMapState(offhand, mc.world);
         if (state != null) {
-            info("Map scale: " + state.scale());
+            // Usamos el campo directamente porque los mappings mojang usan método `scale()` y Yarn `scale`
+            info("Map scale: " + state.scale);
         } else {
             warning("Map state is null.");
         }
