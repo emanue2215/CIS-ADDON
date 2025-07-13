@@ -71,7 +71,6 @@ public class BoatUAV extends Module {
         .build()
     );
 
-
     private static final MinecraftClient mc = MinecraftClient.getInstance();
     private enum State { MOVING_UP_Y_1, MOVING_UP_Y_2, MOVING_DOWN_Y }
     private State currentState = State.MOVING_UP_Y_1;
@@ -214,7 +213,6 @@ public class BoatUAV extends Module {
         sendMovePacket(boat, newXZPos);
     }
 
-
     private void handleMovement(BoatEntity boat, Vec3d targetPos, double targetY) {
         double currentY = lastSentPos.y;
         double yDelta = (currentState == State.MOVING_UP_Y_1 ? yTarget : targetY) - currentY;
@@ -238,7 +236,6 @@ public class BoatUAV extends Module {
 
         sendMovePacket(boat, newPos);
     }
-
 
     private void sendMovePacket(BoatEntity boat, Vec3d newPos) {
         mc.player.networkHandler.sendPacket(new VehicleMoveC2SPacket(newPos, boat.getYaw(), boat.getPitch(), false));
