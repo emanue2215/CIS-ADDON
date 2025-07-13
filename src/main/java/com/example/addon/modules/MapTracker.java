@@ -1,66 +1,62 @@
 package com.example.addon.modules;
 
-import net.minecraft.world.item.FilledMapItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.saveddata.maps.MapState;
-import net.minecraft.world.level.saveddata.maps.MapDecoration;
-import net.minecraft.world.level.saveddata.maps.MapBannerMarker;
-import net.minecraft.core.BlockPos;
-import com.example.addon.CISAddon;
-import com.example.addon.utils.ChatUtils;
+import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.systems.modules.ModuleCategory;
+import meteordevelopment.meteorclient.systems.modules.Modules;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 
-import java.util.Collection;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.item.FilledMapItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.map.MapState;
 
 public class MapTracker extends Module {
-
     public MapTracker() {
-        super(CISAddon.CATEGORY, "map-tracker", "Displays detailed info of the map in your offhand.");
+        super(ModuleCategory.Misc, "map-tracker", "Displays the ID of the map in your offhand.");
     }
 
     @Override
-    public void onTick() {
-        ItemStack item = mc.player.getOffhandItem();
+    public void onActivate() {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        ClientPlayerEntity player = mc.player;
 
-        if (item.isEmpty() || !(item.getItem() instanceof FilledMapItem)) {
+        if (player == null) {
+            error("Player is null.");
+            toggle();
             return;
         }
 
-        // Obtener el id del mapa desde el NBT
-        if (!item.hasTag()) {
-            return;
-        }
-        MapState state = FilledMapItem.getSavedData(item, mc.level);
+        ItemStack offhand = player.getOffHandStack();
 
-        if (state == null) {
-            ChatUtils.info("No map data available.");
+        if (!(offhand.getItem() instanceof FilledMapItem)) {
+            error("No map in offhand.");
+            toggle();
             return;
         }
 
-        int mapId = FilledMapItem.getMapId(item.getTag());
-        ChatUtils.info("Map ID: " + mapId);
+        int mapId = FilledMapItem.getMapId(offhand);
+        info("Map ID: " + mapId);
 
-        // Mostrar decoraciones del mapa
-        Collection<MapDecoration> decorations = state.getDecorations();
-        if (!decorations.isEmpty()) {
-            ChatUtils.info("Map Decorations:");
-            for (MapDecoration dec : decorations) {
-                ChatUtils.info(" - Type: " + dec.type().toString() + ", X = " + dec.getX() + ", Z = " + dec.getZ());
-            }
+        MapState state = FilledMapItem.getMapState(offhand, mc.world);
+        if (state != null) {
+            info("Map scale: " + state.scale);
+        } else {
+            warning("Map state is null.");
         }
 
-        // Mostrar banners del mapa
-        Collection<MapBannerMarker> banners = state.getBanners();
-        if (!banners.isEmpty()) {
-            ChatUtils.info("Map Banners:");
-            for (MapBannerMarker marker : banners) {
-                BlockPos pos = marker.pos();
-                ChatUtils.info(" - Banner at " + pos.toShortString());
-            }
-        }
+        toggle(); // Disable after one use
+    }
 
-        // Posición del marco del mapa (si existe)
-        if (state.framePos() != null) {
-            ChatUtils.info("Item Frame Position: " + state.framePos().toShortString());
-        }
+    private void info(String message) {
+        ChatUtils.info("[MapTracker] " + message);
+    }
+
+    private void error(String message) {
+        ChatUtils.error("[MapTracker] " + message);
+    }
+
+    private void warning(String message) {
+        ChatUtils.warning("[MapTracker] " + message);
     }
 }
