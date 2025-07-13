@@ -87,7 +87,7 @@ public class BoatUAV extends Module {
     private int bowTickCounter = 0;
 
     public BoatUAV() {
-        super(Main.CATEGORY, "BoatUAV", "BOAT GO CRAZYYYYYY WOOHOOOO VELOCITY KILLA 3000");
+        super(CISAddon.CATEGORY, "BoatUAV", "BOAT GO CRAZYYYYYY WOOHOOOO VELOCITY KILLA 3000");
     }
 
     @Override
