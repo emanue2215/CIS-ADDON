@@ -35,10 +35,10 @@ public class MapTracker extends Module {
             return;
         }
 
-        NbtCompound tag = offhand.hasNbt() ? offhand.getNbt() : null;
-
-        if (tag == null || !tag.contains("map", 99)) { // 99 = NBT number types
-            error("Map ID not found in NBT.");
+        // Obtener el NBT y verificar existencia de la clave "map"
+        NbtCompound tag = offhand.getOrCreateTag();
+        if (!tag.contains("map")) {
+            error("Map ID not found in item NBT.");
             toggle();
             return;
         }
@@ -48,12 +48,12 @@ public class MapTracker extends Module {
 
         MapState state = FilledMapItem.getMapState(offhand, mc.world);
         if (state != null) {
-            info("Map scale: " + state.scale);
+            info("Map scale: " + state.scale); // 'scale' es campo público
         } else {
             warning("Map state is null.");
         }
 
-        toggle(); // desactiva módulo tras un uso
+        toggle(); // Desactiva el módulo tras un uso
     }
 
     private void info(String message) {
