@@ -1,6 +1,6 @@
-package com.example.addon.modules;
+package com.zorrilo197.cisaddon.modules;
 
-import com.example.addon.AddonTemplate;
+import com.zorrilo197.cisaddon.CISAddon;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.renderer.ShapeMode;
 import meteordevelopment.meteorclient.settings.ColorSetting;
