@@ -9,10 +9,11 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
+import net.minecraft.nbt.NbtCompound;
 
 public class MapTracker extends Module {
     public MapTracker() {
-        super(CATEGORY, "map-tracker", "Displays the ID of the map in your offhand.");
+        super(CATEGORY, "map-tracker", "Displays the ID and scale of the map in your offhand.");
     }
 
     @Override
@@ -29,12 +30,19 @@ public class MapTracker extends Module {
         ItemStack offhand = player.getOffHandStack();
 
         if (!(offhand.getItem() instanceof FilledMapItem)) {
-            error("No map in offhand.");
+            error("No filled map in offhand.");
             toggle();
             return;
         }
 
-        int mapId = FilledMapItem.getMapId(offhand);
+        NbtCompound nbt = offhand.getNbt();
+        if (nbt == null) {
+            error("Map has no NBT data.");
+            toggle();
+            return;
+        }
+
+        int mapId = FilledMapItem.getMapId(nbt);
         info("Map ID: " + mapId);
 
         MapState state = FilledMapItem.getMapState(offhand, mc.world);
