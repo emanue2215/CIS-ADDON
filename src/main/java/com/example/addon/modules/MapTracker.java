@@ -9,6 +9,9 @@ import net.minecraft.item.map.MapDecoration;
 import net.minecraft.item.map.MapState;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.Map;
+import java.util.UUID;
+
 public class MapTracker extends Module {
     public MapTracker() {
         super(CISAddon.CATEGORY, "map-tracker", "Displays detailed info of the map in your offhand.");
@@ -29,7 +32,6 @@ public class MapTracker extends Module {
             return;
         }
 
-        // MapState viene directamente de FilledMapItem
         MapState state = FilledMapItem.getMapState(offhand, mc.world);
         if (state == null) {
             ChatUtils.error("Could not read map state.");
@@ -38,34 +40,32 @@ public class MapTracker extends Module {
         }
 
         ChatUtils.info("=== Map Information ===");
-        ChatUtils.info("Center: (" + state.centerX + ", " + state.centerZ + ")");
-        ChatUtils.info("Scale: " + state.scale);
-        ChatUtils.info("Locked: " + state.locked);
+        ChatUtils.info("Center: (" + state.getCenterX() + ", " + state.getCenterZ() + ")");
+        ChatUtils.info("Scale: " + state.getScale());
+        ChatUtils.info("Locked: " + state.isLocked());
 
-        // Las decoraciones (markers/entities)
-        if (!state.decorations.isEmpty()) {
+        Map<String, MapDecoration> decos = state.getDecorations();
+        if (!decos.isEmpty()) {
             ChatUtils.info("Decorations:");
-            for (Map.Entry<String, MapDecoration> e : state.decorations.entrySet()) {
-                MapDecoration dec = e.getValue();
-                ChatUtils.info(" - " + dec.type.name() + " @ (" + dec.x + ", " + dec.z + ")");
+            for (MapDecoration dec : decos.values()) {
+                ChatUtils.info(" - " + dec.type().getName() + " @ (" + dec.x() + ", " + dec.z() + ")");
             }
         } else {
             ChatUtils.info("Decorations: none");
         }
 
-        // Los banners (banderas colocadas)
-        if (!state.bannerMarkers.isEmpty()) {
+        Map<UUID, MapState.MapBannerMarker> banners = state.getMarkers();
+        if (!banners.isEmpty()) {
             ChatUtils.info("Banners:");
-            for (Map.Entry<java.util.UUID, MapState.MapBannerMarker> e : state.bannerMarkers.entrySet()) {
-                BlockPos pos = e.getValue().getPos();
+            for (MapState.MapBannerMarker marker : banners.values()) {
+                BlockPos pos = marker.getPos();
                 ChatUtils.info(" - Banner @ " + pos.toShortString());
             }
         } else {
             ChatUtils.info("Banners: none");
         }
 
-        // La posición de seguimiento (item frame)
-        BlockPos framePos = state.trackingPosition;
+        BlockPos framePos = state.getTrackingPosition();
         if (framePos != null) {
             ChatUtils.info("Frame position: " + framePos.toShortString());
         } else {
@@ -75,4 +75,3 @@ public class MapTracker extends Module {
         toggle(); // se desactiva después de mostrar
     }
 }
-
