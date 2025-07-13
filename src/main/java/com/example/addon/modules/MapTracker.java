@@ -13,10 +13,6 @@ import net.minecraft.world.World;
 import java.util.Map;
 import java.util.UUID;
 
-public MapTracker(Category category) {
-    super(category, "map-tracker", "Displays detailed info of the map in your offhand.");
-}
-
 public class MapTracker extends Module {
     public MapTracker() {
         super(CISAddon.CATEGORY, "map-tracker", "Displays detailed info of the map in your offhand.");
