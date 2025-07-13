@@ -35,10 +35,10 @@ public class MapTracker extends Module {
             return;
         }
 
-        NbtCompound tag = offhand.getNbt(); // <- correcto en Yarn actual
+        NbtCompound tag = offhand.hasNbt() ? offhand.getNbt() : null;
 
-        if (tag == null || !tag.contains("map")) {
-            error("Map tag not found in NBT.");
+        if (tag == null || !tag.contains("map", 99)) { // 99 = NBT number types
+            error("Map ID not found in NBT.");
             toggle();
             return;
         }
@@ -48,12 +48,12 @@ public class MapTracker extends Module {
 
         MapState state = FilledMapItem.getMapState(offhand, mc.world);
         if (state != null) {
-            info("Map scale: " + state.scale); // ← público en Yarn
+            info("Map scale: " + state.scale);
         } else {
             warning("Map state is null.");
         }
 
-        toggle(); // Desactiva el módulo tras un uso
+        toggle(); // desactiva módulo tras un uso
     }
 
     private void info(String message) {
