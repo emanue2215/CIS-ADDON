@@ -11,6 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 
+import java.util.OptionalInt;
+
 public class MapTracker extends Module {
     public MapTracker() {
         super(CATEGORY, "map-tracker", "Displays the ID and scale of the map in your offhand.");
@@ -35,19 +37,26 @@ public class MapTracker extends Module {
             return;
         }
 
-        NbtCompound tag = offhand.getTag();
+        NbtCompound tag = offhand.getNbt();
         if (tag == null || !tag.contains("map")) {
             error("Map NBT missing or invalid.");
             toggle();
             return;
         }
 
-        int mapId = tag.getInt("map");
+        OptionalInt mapIdOpt = FilledMapItem.getMapId(tag);
+        if (mapIdOpt.isEmpty()) {
+            error("Could not read map ID.");
+            toggle();
+            return;
+        }
+
+        int mapId = mapIdOpt.getAsInt();
         info("Map ID: " + mapId);
 
         MapState state = FilledMapItem.getMapState(offhand, mc.world);
         if (state != null) {
-            info("Map scale: " + state.scale);
+            info("Map scale: " + state.scale());
         } else {
             warning("Map state is null.");
         }
@@ -67,4 +76,3 @@ public class MapTracker extends Module {
         ChatUtils.warning("[MapTracker] " + message);
     }
 }
-
