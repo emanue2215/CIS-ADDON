@@ -2,21 +2,25 @@ package com.zorrilo197.cisaddon.modules;
 
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import meteordevelopment.meteorclient.systems.modules.Category;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
-import net.minecraft.util.math.BlockPos;
 
 import java.util.Map;
 
 public class MapTracker extends Module {
-    public MapTracker(Category category) {
-        super(category, "map-tracker", "Displays detailed info of the map in your offhand.");
+    public MapTracker() {
+        super(CISAddon.CATEGORY, "map-tracker", "Displays detailed info of the map in your offhand.");
     }
 
     @Override
     public void onActivate() {
+        if (mc.player == null || mc.world == null) {
+            ChatUtils.info("World or player not loaded.");
+            toggle();
+            return;
+        }
+
         ItemStack item = mc.player.getOffHandStack();
 
         if (item.isEmpty()) {
@@ -45,7 +49,6 @@ public class MapTracker extends Module {
         ChatUtils.info("Locked: " + state.locked);
         ChatUtils.info("Map ID: " + FilledMapItem.getMapId(item));
 
-        // Icons (entities/markers on map)
         if (!state.icons.isEmpty()) {
             ChatUtils.info("Icons:");
             for (Map.Entry<String, net.minecraft.item.map.MapIcon> entry : state.icons.entrySet()) {
@@ -55,7 +58,6 @@ public class MapTracker extends Module {
             ChatUtils.info("Icons: None");
         }
 
-        // Banners
         if (!state.banners.isEmpty()) {
             ChatUtils.info("Banners:");
             state.banners.forEach((pos, name) -> {
@@ -65,7 +67,6 @@ public class MapTracker extends Module {
             ChatUtils.info("Banners: None");
         }
 
-        // Item Frame position
         if (state.framePos != null) {
             ChatUtils.info("Item Frame Position: " + state.framePos.toShortString());
         } else {
