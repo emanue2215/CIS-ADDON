@@ -1,70 +1,78 @@
 package com.zorrilo197.cisaddon.modules;
 
+import com.zorrilo197.cisaddon.CISAddon;
 import meteordevelopment.meteorclient.systems.modules.Module;
-import static com.zorrilo197.cisaddon.CISAddon.CATEGORY;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.map.MapDecoration;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.BlockPos;
 
 public class MapTracker extends Module {
     public MapTracker() {
-        super(CATEGORY, "map-tracker", "Displays the ID and scale of the map in your offhand.");
+        super(CISAddon.CATEGORY, "map-tracker", "Displays detailed info of the map in your offhand.");
     }
 
     @Override
     public void onActivate() {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        ClientPlayerEntity player = mc.player;
-
-        if (player == null || mc.world == null) {
-            error("Player or world is null.");
+        if (mc.player == null || mc.world == null) {
+            ChatUtils.error("Player or world is null.");
             toggle();
             return;
         }
 
-        ItemStack offhand = player.getOffHandStack();
-
+        ItemStack offhand = mc.player.getOffHandStack();
         if (!(offhand.getItem() instanceof FilledMapItem)) {
-            error("No filled map in offhand.");
+            ChatUtils.error("No filled map in offhand.");
             toggle();
             return;
         }
 
-        // Obtener el NBT y verificar existencia de la clave "map"
-        NbtCompound tag = offhand.getOrCreateTag();
-        if (!tag.contains("map")) {
-            error("Map ID not found in item NBT.");
-            toggle();
-            return;
-        }
-
-        int mapId = tag.getInt("map");
-        info("Map ID: " + mapId);
-
+        // MapState viene directamente de FilledMapItem
         MapState state = FilledMapItem.getMapState(offhand, mc.world);
-        if (state != null) {
-            info("Map scale: " + state.scale); // 'scale' es campo público
-        } else {
-            warning("Map state is null.");
+        if (state == null) {
+            ChatUtils.error("Could not read map state.");
+            toggle();
+            return;
         }
 
-        toggle(); // Desactiva el módulo tras un uso
-    }
+        ChatUtils.info("=== Map Information ===");
+        ChatUtils.info("Center: (" + state.centerX + ", " + state.centerZ + ")");
+        ChatUtils.info("Scale: " + state.scale);
+        ChatUtils.info("Locked: " + state.locked);
 
-    private void info(String message) {
-        ChatUtils.info("[MapTracker] " + message);
-    }
+        // Las decoraciones (markers/entities)
+        if (!state.decorations.isEmpty()) {
+            ChatUtils.info("Decorations:");
+            for (Map.Entry<String, MapDecoration> e : state.decorations.entrySet()) {
+                MapDecoration dec = e.getValue();
+                ChatUtils.info(" - " + dec.type.name() + " @ (" + dec.x + ", " + dec.z + ")");
+            }
+        } else {
+            ChatUtils.info("Decorations: none");
+        }
 
-    private void error(String message) {
-        ChatUtils.error("[MapTracker] " + message);
-    }
+        // Los banners (banderas colocadas)
+        if (!state.bannerMarkers.isEmpty()) {
+            ChatUtils.info("Banners:");
+            for (Map.Entry<java.util.UUID, MapState.MapBannerMarker> e : state.bannerMarkers.entrySet()) {
+                BlockPos pos = e.getValue().getPos();
+                ChatUtils.info(" - Banner @ " + pos.toShortString());
+            }
+        } else {
+            ChatUtils.info("Banners: none");
+        }
 
-    private void warning(String message) {
-        ChatUtils.warning("[MapTracker] " + message);
+        // La posición de seguimiento (item frame)
+        BlockPos framePos = state.trackingPosition;
+        if (framePos != null) {
+            ChatUtils.info("Frame position: " + framePos.toShortString());
+        } else {
+            ChatUtils.info("Frame position: none");
+        }
+
+        toggle(); // se desactiva después de mostrar
     }
 }
+
