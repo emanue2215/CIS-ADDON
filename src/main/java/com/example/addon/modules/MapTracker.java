@@ -48,35 +48,35 @@ public class MapTracker extends Module {
         }
 
         ChatUtils.info("=== Map Information ===");
-        ChatUtils.info("Center coordinates: X = " + state.getCenterX() + ", Z = " + state.getCenterZ());
-        ChatUtils.info("Scale: " + state.getScale());
-        RegistryKey<World> dimensionKey = state.getDimension();
+        ChatUtils.info("Center coordinates: X = " + state.centerX + ", Z = " + state.centerZ);
+        ChatUtils.info("Scale: " + state.scale);
+        RegistryKey<World> dimensionKey = state.dimension;
         Identifier dimensionId = dimensionKey.getValue();
-        ChatUtils.info("Dimension: " + dimensionId.toString());
-        ChatUtils.info("Locked: " + state.isLocked());
+        ChatUtils.info("Dimension: " + dimensionId);
+        ChatUtils.info("Locked: " + state.locked);
         ChatUtils.info("Map ID: " + FilledMapItem.getMapId(item));
 
-        if (!state.getIcons().isEmpty()) {
+        if (!state.icons.isEmpty()) {
             ChatUtils.info("Icons:");
-            for (Map.Entry<UUID, MapState.Icon> entry : state.getIcons().entrySet()) {
+            for (Map.Entry<UUID, MapState.Icon> entry : state.icons.entrySet()) {
                 MapState.Icon icon = entry.getValue();
-                ChatUtils.info(" - Type: " + icon.type().asString() + ", X = " + icon.getX() + ", Z = " + icon.getZ());
+                ChatUtils.info(" - Type: " + icon.type.asString() + ", X = " + icon.getX() + ", Z = " + icon.getZ());
             }
         } else {
             ChatUtils.info("Icons: None");
         }
 
-        if (!state.getBanners().isEmpty()) {
+        if (!state.banners.isEmpty()) {
             ChatUtils.info("Banners:");
-            for (Map.Entry<BlockPos, String> banner : state.getBanners().entrySet()) {
+            for (Map.Entry<BlockPos, String> banner : state.banners.entrySet()) {
                 ChatUtils.info(" - " + banner.getValue() + " at " + banner.getKey().toShortString());
             }
         } else {
             ChatUtils.info("Banners: None");
         }
 
-        if (state.getFramePos() != null) {
-            ChatUtils.info("Item Frame Position: " + state.getFramePos().toShortString());
+        if (state.framePos != null) {
+            ChatUtils.info("Item Frame Position: " + state.framePos.toShortString());
         } else {
             ChatUtils.info("Item Frame Position: None");
         }
