@@ -17,10 +17,6 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.util.math.Vec3d;
 
-public BoatUAV(Category category) {
-    super(category, "BoatUAV", "BOAT GO CRAZYYYYYY WOOHOOOO VELOCITY KILLA 3000");
-}
-
 public class BoatUAV extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     public final Setting<Boolean> autoTrack = sgGeneral.add(new BoolSetting.Builder()
