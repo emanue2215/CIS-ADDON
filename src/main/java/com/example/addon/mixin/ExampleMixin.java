@@ -1,6 +1,6 @@
-package com.example.addon.mixin;
+package com.zorrilo197.cisaddon.mixin;
 
-import com.example.addon.AddonTemplate;
+import com.zorrilo197.cisaddon.CISAddon;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import org.spongepowered.asm.mixin.Mixin;
