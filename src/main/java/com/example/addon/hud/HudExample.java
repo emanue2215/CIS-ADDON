@@ -1,6 +1,6 @@
 package com.zorrilo197.cisaddon.hud;
 
-import com.example.addon.CISAddon;
+import com.zorrilo197.cisaddon.CISAddon;
 import meteordevelopment.meteorclient.systems.hud.HudElement;
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
