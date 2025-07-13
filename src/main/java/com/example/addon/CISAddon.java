@@ -1,3 +1,4 @@
+// CISAddon.java
 package com.zorrilo197.cisaddon;
 
 import com.zorrilo197.cisaddon.modules.BoatUAV;
@@ -17,12 +18,15 @@ import org.slf4j.Logger;
 
 public class CISAddon extends MeteorAddon {
     public static final Logger LOG = LogUtils.getLogger();
-    public static final Category CATEGORY = new Category("CIS");
-    public static final HudGroup HUD_GROUP = new HudGroup("CIS");
+    public static final Category CATEGORY = new Category("cis", "CIS");
+    public static final HudGroup HUD_GROUP = new HudGroup("cis", "CIS");
 
     @Override
     public void onInitialize() {
         LOG.info("Initializing CIS Addon");
+
+        // Register our category
+        Modules.registerCategory(CATEGORY);
 
         // Modules
         Modules.get().add(new ModuleExample());
@@ -34,11 +38,6 @@ public class CISAddon extends MeteorAddon {
 
         // HUD
         Hud.get().register(HudExample.INFO);
-    }
-
-    @Override
-    public void onRegisterCategories() {
-        Modules.registerCategory(CATEGORY);
     }
 
     @Override
