@@ -1,8 +1,7 @@
-package com.example.addon.modules;
+package com.zorrilo197.cisaddon.modules;
 
 import meteordevelopment.meteorclient.systems.modules.Module;
-import meteordevelopment.meteorclient.systems.modules.ModuleCategory;
-import meteordevelopment.meteorclient.systems.modules.Modules;
+import static com.zorrilo197.cisaddon.CISAddon.CATEGORY;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 
 import net.minecraft.client.MinecraftClient;
@@ -13,7 +12,7 @@ import net.minecraft.item.map.MapState;
 
 public class MapTracker extends Module {
     public MapTracker() {
-        super(ModuleCategory.Misc, "map-tracker", "Displays the ID of the map in your offhand.");
+        super(CATEGORY, "map-tracker", "Displays the ID of the map in your offhand.");
     }
 
     @Override
@@ -21,8 +20,8 @@ public class MapTracker extends Module {
         MinecraftClient mc = MinecraftClient.getInstance();
         ClientPlayerEntity player = mc.player;
 
-        if (player == null) {
-            error("Player is null.");
+        if (player == null || mc.world == null) {
+            error("Player or world is null.");
             toggle();
             return;
         }
