@@ -5,8 +5,13 @@ import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class MapTracker extends Module {
     public MapTracker() {
@@ -43,32 +48,35 @@ public class MapTracker extends Module {
         }
 
         ChatUtils.info("=== Map Information ===");
-        ChatUtils.info("Center coordinates: X = " + state.centerX + ", Z = " + state.centerZ);
-        ChatUtils.info("Scale: " + state.scale);
-        ChatUtils.info("Dimension: " + state.dimension.getValue().toString());
-        ChatUtils.info("Locked: " + state.locked);
+        ChatUtils.info("Center coordinates: X = " + state.getCenterX() + ", Z = " + state.getCenterZ());
+        ChatUtils.info("Scale: " + state.getScale());
+        RegistryKey<World> dimensionKey = state.getDimension();
+        Identifier dimensionId = dimensionKey.getValue();
+        ChatUtils.info("Dimension: " + dimensionId.toString());
+        ChatUtils.info("Locked: " + state.isLocked());
         ChatUtils.info("Map ID: " + FilledMapItem.getMapId(item));
 
-        if (!state.icons.isEmpty()) {
+        if (!state.getIcons().isEmpty()) {
             ChatUtils.info("Icons:");
-            for (Map.Entry<String, net.minecraft.item.map.MapIcon> entry : state.icons.entrySet()) {
-                ChatUtils.info(" - " + entry.getKey() + " at (" + entry.getValue().getX() + ", " + entry.getValue().getZ() + ")");
+            for (Map.Entry<UUID, MapState.Icon> entry : state.getIcons().entrySet()) {
+                MapState.Icon icon = entry.getValue();
+                ChatUtils.info(" - Type: " + icon.type().asString() + ", X = " + icon.getX() + ", Z = " + icon.getZ());
             }
         } else {
             ChatUtils.info("Icons: None");
         }
 
-        if (!state.banners.isEmpty()) {
+        if (!state.getBanners().isEmpty()) {
             ChatUtils.info("Banners:");
-            state.banners.forEach((pos, name) -> {
-                ChatUtils.info(" - " + name + " at " + pos.toShortString());
-            });
+            for (Map.Entry<BlockPos, String> banner : state.getBanners().entrySet()) {
+                ChatUtils.info(" - " + banner.getValue() + " at " + banner.getKey().toShortString());
+            }
         } else {
             ChatUtils.info("Banners: None");
         }
 
-        if (state.framePos != null) {
-            ChatUtils.info("Item Frame Position: " + state.framePos.toShortString());
+        if (state.getFramePos() != null) {
+            ChatUtils.info("Item Frame Position: " + state.getFramePos().toShortString());
         } else {
             ChatUtils.info("Item Frame Position: None");
         }
