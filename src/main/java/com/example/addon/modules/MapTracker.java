@@ -35,14 +35,14 @@ public class MapTracker extends Module {
             return;
         }
 
-        NbtCompound nbt = offhand.getNbt();
-        if (nbt == null) {
-            error("Map has no NBT data.");
+        NbtCompound tag = offhand.getTag();
+        if (tag == null || !tag.contains("map")) {
+            error("Map NBT missing or invalid.");
             toggle();
             return;
         }
 
-        int mapId = FilledMapItem.getMapId(nbt);
+        int mapId = tag.getInt("map");
         info("Map ID: " + mapId);
 
         MapState state = FilledMapItem.getMapState(offhand, mc.world);
@@ -67,3 +67,4 @@ public class MapTracker extends Module {
         ChatUtils.warning("[MapTracker] " + message);
     }
 }
+
