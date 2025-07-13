@@ -1,90 +1,66 @@
-package com.zorrilo197.cisaddon.modules;
+package com.example.addon.modules;
 
-import com.zorrilo197.cisaddon.CISAddon;
-import meteordevelopment.meteorclient.systems.modules.Module;
-import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.map.MapState;
-import net.minecraft.item.map.MapDecoration;
-import net.minecraft.item.map.MapBannerMarker;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.item.FilledMapItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.saveddata.maps.MapState;
+import net.minecraft.world.level.saveddata.maps.MapDecoration;
+import net.minecraft.world.level.saveddata.maps.MapBannerMarker;
+import net.minecraft.core.BlockPos;
+import com.example.addon.CISAddon;
+import com.example.addon.utils.ChatUtils;
+
+import java.util.Collection;
 
 public class MapTracker extends Module {
+
     public MapTracker() {
         super(CISAddon.CATEGORY, "map-tracker", "Displays detailed info of the map in your offhand.");
     }
 
     @Override
-    public void onActivate() {
-        if (mc.player == null || mc.world == null) {
-            ChatUtils.info("World or player not loaded.");
-            toggle();
+    public void onTick() {
+        ItemStack item = mc.player.getOffhandItem();
+
+        if (item.isEmpty() || !(item.getItem() instanceof FilledMapItem)) {
             return;
         }
 
-        ItemStack item = mc.player.getOffHandStack();
-
-        if (item.isEmpty()) {
-            ChatUtils.info("You are not holding any item in your offhand.");
-            toggle();
+        // Obtener el id del mapa desde el NBT
+        if (!item.hasTag()) {
             return;
         }
+        MapState state = FilledMapItem.getSavedData(item, mc.level);
 
-        if (!(item.getItem() instanceof FilledMapItem)) {
-            ChatUtils.info("The item in your offhand is not a filled map.");
-            toggle();
-            return;
-        }
-
-        MapState state = FilledMapItem.getMapState(item, mc.world);
         if (state == null) {
-            ChatUtils.info("Could not read the map state.");
-            toggle();
+            ChatUtils.info("No map data available.");
             return;
         }
 
-        ChatUtils.info("=== Map Information ===");
-        ChatUtils.info("Center coordinates: X = " + state.centerX + ", Z = " + state.centerZ);
-        ChatUtils.info("Scale: " + state.scale);
-        RegistryKey<World> dimensionKey = state.dimension;
-        Identifier dimensionId = dimensionKey.getValue();
-        ChatUtils.info("Dimension: " + dimensionId);
-        ChatUtils.info("Locked: " + state.locked);
-
-        int mapId = FilledMapItem.getMapId(item.getNbt());
+        int mapId = FilledMapItem.getMapId(item.getTag());
         ChatUtils.info("Map ID: " + mapId);
 
-        boolean hasDecorations = state.getDecorations().iterator().hasNext();
-        if (hasDecorations) {
-            ChatUtils.info("Icons:");
-            for (MapDecoration dec : state.getDecorations()) {
-                ChatUtils.info(" - Type: " + dec.type().value().toString() + ", X = " + dec.x() + ", Z = " + dec.z());
+        // Mostrar decoraciones del mapa
+        Collection<MapDecoration> decorations = state.getDecorations();
+        if (!decorations.isEmpty()) {
+            ChatUtils.info("Map Decorations:");
+            for (MapDecoration dec : decorations) {
+                ChatUtils.info(" - Type: " + dec.type().toString() + ", X = " + dec.getX() + ", Z = " + dec.getZ());
             }
-        } else {
-            ChatUtils.info("Icons: None");
         }
 
-        if (!state.getBanners().isEmpty()) {
-            ChatUtils.info("Banners:");
-            for (MapBannerMarker marker : state.getBanners().values()) {
-                BlockPos pos = marker.getPos();
+        // Mostrar banners del mapa
+        Collection<MapBannerMarker> banners = state.getBanners();
+        if (!banners.isEmpty()) {
+            ChatUtils.info("Map Banners:");
+            for (MapBannerMarker marker : banners) {
+                BlockPos pos = marker.pos();
                 ChatUtils.info(" - Banner at " + pos.toShortString());
             }
-        } else {
-            ChatUtils.info("Banners: None");
         }
 
-        if (state.getFramePos() != null) {
-            ChatUtils.info("Item Frame Position: " + state.getFramePos().toShortString());
-        } else {
-            ChatUtils.info("Item Frame Position: None");
+        // Posición del marco del mapa (si existe)
+        if (state.framePos() != null) {
+            ChatUtils.info("Item Frame Position: " + state.framePos().toShortString());
         }
-
-        toggle();
     }
 }
-
