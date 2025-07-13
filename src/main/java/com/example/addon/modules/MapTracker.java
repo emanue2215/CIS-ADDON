@@ -35,9 +35,9 @@ public class MapTracker extends Module {
             return;
         }
 
-        NbtCompound tag = offhand.getOrCreateNbt();
+        NbtCompound tag = offhand.getNbt(); // <- correcto en Yarn actual
 
-        if (!tag.contains("map")) {
+        if (tag == null || !tag.contains("map")) {
             error("Map tag not found in NBT.");
             toggle();
             return;
@@ -48,7 +48,7 @@ public class MapTracker extends Module {
 
         MapState state = FilledMapItem.getMapState(offhand, mc.world);
         if (state != null) {
-            info("Map scale: " + state.scale); // Yarn mappings: campo público
+            info("Map scale: " + state.scale); // ← público en Yarn
         } else {
             warning("Map state is null.");
         }
