@@ -1,5 +1,6 @@
 package com.zorrilo197.cisaddon;
 
+import com.zorrilo197.cisaddon.modules.BoatUAV;
 import com.zorrilo197.cisaddon.modules.MapTracker;
 import com.zorrilo197.cisaddon.commands.CommandExample;
 import com.zorrilo197.cisaddon.hud.HudExample;
