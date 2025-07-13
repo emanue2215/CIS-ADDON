@@ -1,9 +1,9 @@
 package com.zorrilo197.cisaddon;
 
 import com.zorrilo197.cisaddon.modules.MapTracker;
-import com.example.addon.commands.CommandExample;
-import com.example.addon.hud.HudExample;
-import com.example.addon.modules.ModuleExample;
+import com.zorrilo197.cisaddon.commands.CommandExample;
+import com.zorrilo197.cisaddon.hud.HudExample;
+import com.zorrilo197.cisaddon.modules.ModuleExample;
 import com.mojang.logging.LogUtils;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
