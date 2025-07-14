@@ -27,7 +27,7 @@ public class MapTracker extends Module {
             return;
         }
 
-        NbtCompound tag = offhand.geNbt();
+        NbtCompound tag = offhand.getNbt();
         if (tag == null || tag.isEmpty()) {
             ChatUtils.error("No NBT data found on the map item.");
             toggle();
