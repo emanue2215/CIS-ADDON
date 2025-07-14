@@ -1,6 +1,7 @@
 {
   "required": true,
-  "package": "com.example.addon.mixin",
+  "minVersion": "0.8",
+  "package": "com.zorrilo197.cisaddon.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
     "ExampleMixin"
