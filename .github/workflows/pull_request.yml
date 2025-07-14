@@ -2,7 +2,8 @@ name: Build Pull Request Artifacts
 
 permissions:
   contents: write
-  metadata: read
+  issues: write
+  pull-requests: write
 
 on: pull_request
 
@@ -40,7 +41,7 @@ jobs:
     if: github.event.pull_request.merged == true
 
     steps:
-      - name: Checkout Repository with custom token
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.RELEASE_TOKEN }}
@@ -52,5 +53,4 @@ jobs:
           automatic_release_tag: snapshot
           prerelease: true
           title: Dev Build
-          files: build/libs/*.jar
-          
+          files: build/libs/*.jar   
