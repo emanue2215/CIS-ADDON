@@ -6,11 +6,7 @@ import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.FilledMapItem;
-import meteordevelopment.orbit.EventHandler;
 
-/**
- * MapTracker module: reads NBT data of the map in offhand and displays relevant information.
- */
 public class MapTracker extends Module {
     public MapTracker() {
         super(CISAddon.CATEGORY, "map-tracker", "Reads and displays NBT data of the map in your offhand.");
@@ -38,22 +34,19 @@ public class MapTracker extends Module {
             return;
         }
 
-        // Display map ID if present
         if (nbt.contains("map")) {
             int mapId = nbt.getInt("map");
-            ChatUtils.info(String.format("Map ID: %d", mapId));
+            ChatUtils.info("Map ID: " + mapId);
         } else {
             ChatUtils.info("No 'map' tag found. Listing all keys:");
         }
 
-        // List all keys and their types
         for (String key : nbt.getKeys()) {
-            ChatUtils.info(String.format("- %s: %s", key, nbt.get(key).getType().getName()));
+            ChatUtils.info("- " + key);
         }
 
-        // Optionally show full raw NBT
         ChatUtils.info("Raw NBT: " + nbt);
 
-        toggle(); // disable after reading
+        toggle();
     }
 }
