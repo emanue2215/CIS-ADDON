@@ -2,6 +2,7 @@ name: Build Pull Request Artifacts
 
 permissions:
   contents: write
+  metadata: read
 
 on: pull_request
 
