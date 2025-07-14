@@ -1,56 +1,37 @@
-name: Build Pull Request Artifacts
+name: Release Snapshot
+
+on:
+  push:
+    branches:
+      - main  # o la rama en la que haces releases
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-
-on: pull_request
+  contents: write  # necesario para crear/modificar tags/releases
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          token: ${{ secrets.PAT_TOKEN }}  # usar tu PAT, no GITHUB_TOKEN
 
-      - name: Set up Java
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 21
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Artifacts
-          path: build/libs/
-
-  release:
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.event.pull_request.merged == true
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.RELEASE_TOKEN }}
-          
-      - name: Automatic Release
+      - name: Create Automatic Release
         uses: marvinpinto/action-automatic-releases@latest
         with:
-          repo_token: ${{ secrets.RELEASE_TOKEN }}
-          automatic_release_tag: snapshot
+          repo_token: ${{ secrets.PAT_TOKEN }}
+          automatic_release_tag: snapshot-${{ github.run_number }}
           prerelease: true
           title: Dev Build
-          files: build/libs/*.jar   
+          files: build/libs/*.jar
