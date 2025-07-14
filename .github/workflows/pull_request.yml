@@ -1,5 +1,8 @@
 name: Build Pull Request Artifacts
 
+permissions:
+  contents: write
+
 on: pull_request
 
 jobs:
