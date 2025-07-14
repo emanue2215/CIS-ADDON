@@ -1,62 +1,53 @@
 package com.zorrilo197.cisaddon.modules;
 
 import com.zorrilo197.cisaddon.CISAddon;
+import meteordevelopment.meteorclient.events.packets.PacketEvent.Receive;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.MapDataS2CPacket;
+import net.minecraft.world.level.saveddata.maps.MapState;
+import meteordevelopment.orbit.EventHandler;
 
+/**
+ * MapTracker module: intercepts MapDataS2CPacket and displays map information.
+ */
 public class MapTracker extends Module {
+    private long lastMapId = -1;
+
     public MapTracker() {
-        super(CISAddon.CATEGORY, "map-tracker", "Shows the map origin coordinates in your offhand.");
+        super(CISAddon.CATEGORY, "map-tracker", "Shows the map origin and state when map data arrives.");
     }
 
     @Override
     public void onActivate() {
-        if (mc.player == null || mc.world == null) {
-            ChatUtils.error("Player or world not loaded.");
-            toggle();
-            return;
-        }
+        lastMapId = -1;
+        ChatUtils.info("[MapTracker] Awaiting map data...");
+    }
 
-        ItemStack offhand = mc.player.getOffHandStack();
-        if (!(offhand.getItem() instanceof FilledMapItem)) {
-            ChatUtils.error("No filled map in offhand.");
-            toggle();
-            return;
-        }
+    @Override
+    public void onDeactivate() {
+        // No cleanup needed
+    }
 
-        // 1) Intento estándar
-        MapState state = FilledMapItem.getMapState(offhand, mc.world);
+    @EventHandler
+    private void onPacketReceive(Receive event) {
+        if (!(event.packet instanceof MapDataS2CPacket pkt)) return;
 
-        // 2) Fallback: leer directamente NBT
-        if (state == null) {
-            NbtCompound nbt = offhand.getNbt();
-            if (nbt != null) {
-                state = MapState.fromNbt(nbt);
-            }
-        }
+        MapState state = pkt.getData();
+        long mapId = state.getMapId();
 
-        // 3) Si sigue null, listamos claves NBT para diagnosticar
-        if (state == null) {
-            NbtCompound nbt = offhand.getNbt();
-            ChatUtils.error("Could not read map state.");
-            if (nbt != null) {
-                ChatUtils.info("NBT keys present: " + nbt.getKeys());
-            } else {
-                ChatUtils.info("No NBT data found on the map.");
-            }
-            toggle();
-            return;
-        }
+        // Avoid repeating same map info
+        if (mapId == lastMapId) return;
+        lastMapId = mapId;
 
-        // Si llegamos aquí, `state` ya es válido
-        ChatUtils.info("Map Origin: X=" + state.centerX + ", Z=" + state.centerZ);
-        ChatUtils.info("Scale: " + state.scale);
-        ChatUtils.info("Locked: " + state.locked);
+        // Format and send info to chat
+        String message = String.format(
+            "[MapTracker] Map ID: %d | Origin: X=%d, Z=%d | Scale: %d | Locked: %b",
+            mapId, state.xCenter, state.zCenter, state.scale, state.locked
+        );
+        ChatUtils.info(message);
 
-        toggle(); // Desactivar después de usar
+        // Automatically disable after first output
+        toggle();
     }
 }
