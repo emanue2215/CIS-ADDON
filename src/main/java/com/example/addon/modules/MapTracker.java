@@ -14,8 +14,8 @@ public class MapTracker extends Module {
 
     @Override
     public void onActivate() {
-        if (mc.player == null) {
-            ChatUtils.error("Player not loaded.");
+        if (mc.player == null || mc.world == null) {
+            ChatUtils.error("Player or world not loaded.");
             toggle();
             return;
         }
@@ -27,25 +27,25 @@ public class MapTracker extends Module {
             return;
         }
 
-        NbtCompound nbt = offhand.getNbt();
-        if (nbt == null) {
+        NbtCompound tag = offhand.getTag();
+        if (tag == null || tag.isEmpty()) {
             ChatUtils.error("No NBT data found on the map item.");
             toggle();
             return;
         }
 
-        if (nbt.contains("map")) {
-            int mapId = nbt.getInt("map");
+        if (tag.contains("map")) {
+            int mapId = tag.getInt("map");
             ChatUtils.info("Map ID: " + mapId);
         } else {
             ChatUtils.info("No 'map' tag found. Listing all keys:");
         }
 
-        for (String key : nbt.getKeys()) {
+        for (String key : tag.getKeys()) {
             ChatUtils.info("- " + key);
         }
 
-        ChatUtils.info("Raw NBT: " + nbt);
+        ChatUtils.info("Raw NBT: " + tag);
 
         toggle();
     }
