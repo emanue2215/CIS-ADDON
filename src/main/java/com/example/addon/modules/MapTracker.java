@@ -27,7 +27,7 @@ public class MapTracker extends Module {
             return;
         }
 
-        NbtCompound tag = offhand.getTag();
+        NbtCompound tag = offhand.getNbt();
         if (tag == null || tag.isEmpty()) {
             ChatUtils.error("No NBT data found on the map item.");
             toggle();
@@ -35,7 +35,7 @@ public class MapTracker extends Module {
         }
 
         if (tag.contains("map")) {
-            int mapId = tag.getInt("map");
+            int mapId = tag.getInt("map").orElse(-1);
             ChatUtils.info("Map ID: " + mapId);
         } else {
             ChatUtils.info("No 'map' tag found. Listing all keys:");
