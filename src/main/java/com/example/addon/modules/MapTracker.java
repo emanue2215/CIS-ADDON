@@ -1,72 +1,59 @@
 package com.zorrilo197.cisaddon.modules;
 
 import com.zorrilo197.cisaddon.CISAddon;
-import com.mojang.logging.LogUtils;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
-import org.slf4j.Logger;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.FilledMapItem;
+import meteordevelopment.orbit.EventHandler;
 
 /**
- * MapTracker module: listens on the "minecraft:map_data" channel via Fabric API and displays map info.
+ * MapTracker module: reads NBT data of the map in offhand and displays relevant information.
  */
-@Environment(EnvType.CLIENT)
 public class MapTracker extends Module {
-    private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Identifier MAP_DATA_CHANNEL = new Identifier("minecraft", "map_data");
-    private long lastMapId = -1;
-
     public MapTracker() {
-        super(CISAddon.CATEGORY, "map-tracker", "Shows the map origin and scale when map data arrives.");
+        super(CISAddon.CATEGORY, "map-tracker", "Reads and displays NBT data of the map in your offhand.");
     }
 
     @Override
     public void onActivate() {
-        lastMapId = -1;
-        ChatUtils.info("[MapTracker] Awaiting map data...");
-        // Register channel listener
-        ClientPlayNetworking.registerGlobalReceiver(MAP_DATA_CHANNEL, this::onMapData);
-    }
-
-    @Override
-    public void onDeactivate() {
-        // Cannot unregister Fabric API receivers easily; rely on module disabling logic.
-    }
-
-    private void onMapData(net.minecraft.client.network.ClientPlayNetworkHandler handler, PacketByteBuf buf, net.minecraft.network.listener.ClientPlayPacketListener responseSender) {
-        try {
-            NbtCompound nbt = buf.readNbt();
-            if (nbt == null) {
-                ChatUtils.error("[MapTracker] No NBT data in map_data packet.");
-                toggle();
-                return;
-            }
-
-            int xCenter = nbt.getInt("xCenter");
-            int zCenter = nbt.getInt("zCenter");
-            int scale = nbt.getInt("scale");
-            boolean locked = nbt.getBoolean("locked");
-            long mapId = nbt.contains("mapId") ? nbt.getLong("mapId") : -1;
-
-            if (mapId != -1 && mapId == lastMapId) return;
-            lastMapId = mapId;
-
-            String message = String.format(
-                "[MapTracker] Map ID: %d | Origin: X=%d, Z=%d | Scale: %d | Locked: %b",
-                mapId, xCenter, zCenter, scale, locked
-            );
-            ChatUtils.info(message);
-
-        } catch (Exception e) {
-            LOGGER.error("Error reading map_data packet", e);
-        } finally {
-            // Disable module after first read
+        if (mc.player == null) {
+            ChatUtils.error("Player not loaded.");
             toggle();
+            return;
         }
+
+        ItemStack offhand = mc.player.getOffHandStack();
+        if (offhand.isEmpty() || !(offhand.getItem() instanceof FilledMapItem)) {
+            ChatUtils.error("No filled map in offhand.");
+            toggle();
+            return;
+        }
+
+        NbtCompound nbt = offhand.getNbt();
+        if (nbt == null) {
+            ChatUtils.error("No NBT data found on the map item.");
+            toggle();
+            return;
+        }
+
+        // Display map ID if present
+        if (nbt.contains("map")) {
+            int mapId = nbt.getInt("map");
+            ChatUtils.info(String.format("Map ID: %d", mapId));
+        } else {
+            ChatUtils.info("No 'map' tag found. Listing all keys:");
+        }
+
+        // List all keys and their types
+        for (String key : nbt.getKeys()) {
+            ChatUtils.info(String.format("- %s: %s", key, nbt.get(key).getType().getName()));
+        }
+
+        // Optionally show full raw NBT
+        ChatUtils.info("Raw NBT: " + nbt);
+
+        toggle(); // disable after reading
     }
 }
