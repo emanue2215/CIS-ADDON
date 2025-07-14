@@ -4,13 +4,14 @@ import com.zorrilo197.cisaddon.CISAddon;
 import meteordevelopment.meteorclient.events.packets.PacketEvent.Receive;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.PlayCustomPayloadS2CPacket;
 import net.minecraft.util.Identifier;
 import meteordevelopment.orbit.EventHandler;
 
 /**
- * MapTracker module: intercepts map data packets and displays map information.
+ * MapTracker module: intercepts map_data custom payload and displays map information.
  */
 public class MapTracker extends Module {
     private static final Identifier MAP_DATA_CHANNEL = new Identifier("minecraft", "map_data");
@@ -33,17 +34,23 @@ public class MapTracker extends Module {
 
     @EventHandler
     private void onPacketReceive(Receive event) {
-        if (!(event.packet instanceof CustomPayloadS2CPacket pkt)) return;
-        if (!MAP_DATA_CHANNEL.equals(pkt.getIdentifier())) return;
+        if (!(event.packet instanceof PlayCustomPayloadS2CPacket pkt)) return;
+        if (!MAP_DATA_CHANNEL.equals(pkt.getChannel())) return;
 
-        CompoundTag nbt = pkt.getData();
+        PacketByteBuf buf = pkt.getData();
+        NbtCompound nbt = buf.readNbt();
+        if (nbt == null) {
+            ChatUtils.error("[MapTracker] No NBT data in map_data packet.");
+            toggle();
+            return;
+        }
+
         int xCenter = nbt.getInt("xCenter");
         int zCenter = nbt.getInt("zCenter");
         int scale = nbt.getInt("scale");
         boolean locked = nbt.getBoolean("locked");
-        long mapId = nbt.getLong("mapId"); // if present
+        long mapId = nbt.getLong("mapId"); // or cast from int
 
-        // Avoid repeating same map info
         if (mapId == lastMapId) return;
         lastMapId = mapId;
 
