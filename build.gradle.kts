@@ -53,10 +53,14 @@ tasks {
         }
     }
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+   java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21)) // Usa 24 si quieres, pero 21 es más estable
     }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
 
     withType<JavaCompile> {
         options.encoding = "UTF-8"
@@ -65,3 +69,5 @@ tasks {
         options.compilerArgs.add("-Xlint:unchecked")
     }
 }
+
+

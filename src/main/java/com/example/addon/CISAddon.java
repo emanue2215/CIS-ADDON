@@ -1,10 +1,10 @@
-package com.zorrilo197.cisaddon;
+package com.example.addon;
 
-import com.zorrilo197.cisaddon.modules.BoatUAV;
-import com.zorrilo197.cisaddon.modules.MapTracker;
-import com.zorrilo197.cisaddon.commands.CommandExample;
-import com.zorrilo197.cisaddon.hud.HudExample;
-import com.zorrilo197.cisaddon.modules.ModuleExample;
+import com.example.addon.modules.BoatUAV;
+import com.example.addon.modules.MapTracker;
+import com.example.addon.commands.CommandExample;
+import com.example.addon.hud.HudExample;
+import com.example.addon.modules.ModuleExample;
 import com.mojang.logging.LogUtils;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
@@ -43,7 +43,7 @@ public class CISAddon extends MeteorAddon {
 
     @Override
     public String getPackage() {
-        return "com.zorrilo197.cisaddon";
+        return "com.example.addon";
     }
 
     @Override

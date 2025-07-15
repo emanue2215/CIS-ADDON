@@ -1,6 +1,6 @@
-package com.zorrilo197.cisaddon.modules;
+package com.example.addon.modules;
 
-import com.zorrilo197.cisaddon.CISAddon;
+import com.example.addon.CISAddon;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.Friends;

@@ -1,15 +1,22 @@
-package com.zorrilo197.cisaddon.modules;
+package com.example.addon.modules;
 
-import com.zorrilo197.cisaddon.CISAddon;
+import com.example.addon.CISAddon;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import net.minecraft.component.ComponentChanges;
+import net.minecraft.item.FilledMapItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.item.map.MapState;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.FilledMapItem;
+import java.util.Optional;
 
 public class MapTracker extends Module {
     public MapTracker() {
-        super(CISAddon.CATEGORY, "map-tracker", "Reads and displays NBT data of the map in your offhand.");
+        super(CISAddon.CATEGORY, "map-tracker", "Reads map ID and shows map origin coordinates.");
     }
 
     @Override
@@ -27,26 +34,41 @@ public class MapTracker extends Module {
             return;
         }
 
-        NbtCompound tag = offhand.getNbt();
+        NbtCompound tag = getEncodedNbt(offhand);
         if (tag == null || tag.isEmpty()) {
             ChatUtils.error("No NBT data found on the map item.");
             toggle();
             return;
         }
 
-        if (tag.contains("map")) {
-            int mapId = tag.getInt("map").orElse(-1);
+        Optional<Integer> mapIdOpt = tag.getInt("map");
+        if (mapIdOpt.isPresent()) {
+            int mapId = mapIdOpt.get();
             ChatUtils.info("Map ID: " + mapId);
+
+            MapState state = FilledMapItem.getMapState(offhand, mc.world);
+            if (state != null) {
+                int centerX = state.centerX;
+                int centerZ = state.centerZ;
+                int scale = state.scale;
+                ChatUtils.info("Map center: X=" + centerX + ", Z=" + centerZ + ", scale=" + scale);
+            } else {
+                ChatUtils.warning("Could not read MapState.");
+            }
         } else {
-            ChatUtils.info("No 'map' tag found. Listing all keys:");
+            ChatUtils.info("No 'map' tag found. Listing keys:");
+            for (String key : tag.getKeys()) {
+                ChatUtils.info("- " + key);
+            }
         }
 
-        for (String key : tag.getKeys()) {
-            ChatUtils.info("- " + key);
-        }
-
-        ChatUtils.info("Raw NBT: " + tag);
-
+        ChatUtils.info("Raw NBT: " + tag.asString());
         toggle();
+    }
+
+    private static NbtCompound getEncodedNbt(ItemStack stack) {
+        DynamicOps<NbtElement> ops = NbtOps.INSTANCE;
+        DataResult<NbtElement> result = ComponentChanges.CODEC.encodeStart(ops, stack.getComponentChanges());
+        return (NbtCompound) result.result().orElseGet(NbtCompound::new);
     }
 }
