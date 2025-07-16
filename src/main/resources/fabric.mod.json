@@ -14,7 +14,7 @@
   "environment": "client",
   "entrypoints": {
     "meteor": [
-      "com.zorrilo197.cisaddon.CISAddon"
+      "com.example.addon.CISAddon"
     ]
   },
   "mixins": [
@@ -25,7 +25,7 @@
   },
   "depends": {
     "java": ">=21",
-    "minecraft": [">=1.21.1 <1.21.6"],
+    "minecraft": [">=1.21.5"],
     "meteor-client": "*"
   }
 }
