@@ -59,10 +59,16 @@ public class MapTracker extends Module {
 
         int centerX = ((MapStateAccessor) mapState).getCenterX();
         int centerZ = ((MapStateAccessor) mapState).getCenterZ();
+        byte scale = ((MapStateAccessor) mapState).getScale();
+
+        int realX = centerX * 128;
+        int realZ = centerZ * 128;
+        int areaSize = 128 * (1 << scale);
 
         info("Mapa detectado en la " + (isMain ? "mano principal" : "mano secundaria") + ".");
         info("Map ID: " + mapIdComponent.id());
-        info("Map center: X=" + centerX + ", Z=" + centerZ);
+        info("Map generated at approx coords: X=" + realX + ", Z=" + realZ);
+        info("Map scale: " + scale + " (area size: " + areaSize + "x" + areaSize + ")");
 
         toggle();
     }
