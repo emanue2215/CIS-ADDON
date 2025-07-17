@@ -18,8 +18,7 @@
     ]
   },
   "mixins": [
-    "cisaddon.mixins.json",
-    "mixins.cis-addon.json"
+    "cisaddon.mixins.json"
   ],
   "custom": {
     "meteor-client:color": "24,67,208"
