@@ -1,5 +1,7 @@
 package com.example.addon.modules;
 
+import com.example.addon.CISAddon;
+
 import meteordevelopment.meteorclient.events.render.Render2DEvent;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
@@ -14,7 +16,7 @@ import net.minecraft.item.map.MapState;
 
 public class MapTracker extends Module {
     public MapTracker() {
-        super(Categories.Misc, "map-tracker", "Muestra el ID y coordenadas del mapa que sostienes.");
+        super(CISAddon.CATEGORY, "map-tracker", "Muestra el ID y coordenadas del mapa que sostienes.");
     }
 
     @EventHandler
