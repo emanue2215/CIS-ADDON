@@ -17,6 +17,8 @@ repositories {
         name = "meteor-maven-snapshots"
         url = uri("https://maven.meteordev.org/snapshots")
     }
+    maven { url = uri("https://maven.fabricmc.net/") }      // ← FabricMC
+    mavenCentral()
 }
 
 dependencies {
@@ -24,6 +26,7 @@ dependencies {
     minecraft("com.mojang:minecraft:${properties["minecraft_version"] as String}")
     mappings("net.fabricmc:yarn:${properties["yarn_mappings"] as String}:v2")
     modImplementation("net.fabricmc:fabric-loader:${properties["loader_version"] as String}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.128.1+1.21.5")
 
     // Meteor
     modImplementation("meteordevelopment:meteor-client:${properties["minecraft_version"] as String}-SNAPSHOT")
@@ -54,9 +57,7 @@ tasks {
     }
 
    java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21)) // Usa 24 si quieres, pero 21 es más estable
-    }
+
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
 }
@@ -65,8 +66,7 @@ tasks {
     withType<JavaCompile> {
         options.encoding = "UTF-8"
         options.release = 21
-        options.compilerArgs.add("-Xlint:deprecation")
-        options.compilerArgs.add("-Xlint:unchecked")
+        options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:unchecked"))
     }
 }
 
