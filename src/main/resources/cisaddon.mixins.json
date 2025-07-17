@@ -3,6 +3,9 @@
   "minVersion": "0.8",
   "package": "com.example.addon.mixin",
   "compatibilityLevel": "JAVA_21",
+  "accessors": [
+    "MapStateAccessor"
+  ],
   "client": [
     "ExampleMixin",
     "MapStateAccessor"
