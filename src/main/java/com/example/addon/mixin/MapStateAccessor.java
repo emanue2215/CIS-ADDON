@@ -11,4 +11,7 @@ public interface MapStateAccessor {
 
     @Accessor("centerZ")
     int getCenterZ();
+
+    @Accessor("scale")
+    byte getScale();
 }
