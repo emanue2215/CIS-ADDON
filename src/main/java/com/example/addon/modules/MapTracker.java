@@ -35,7 +35,7 @@ public class MapTracker extends Module {
         ClientWorld world = mc.world;
         MapState mapState = world.getMapState(mapIdComponent);
         if (mapState == null) return;
-        
-        toggle();
+
+    toggle(); // Disable module after showing info
     }
 }
