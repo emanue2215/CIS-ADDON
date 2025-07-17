@@ -18,7 +18,8 @@
     ]
   },
   "mixins": [
-    "cisaddon.mixins.json"
+    "cisaddon.mixins.json",
+    "com.example.addon.mixin.MapStateAccessor"
   ],
   "custom": {
     "meteor-client:color": "24,67,208"

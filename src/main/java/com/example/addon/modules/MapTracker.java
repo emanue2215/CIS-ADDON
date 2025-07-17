@@ -1,9 +1,8 @@
 package com.example.addon.modules;
 
 import com.example.addon.CISAddon;
-
+import com.example.addon.mixin.MapStateAccessor;
 import meteordevelopment.meteorclient.events.render.Render2DEvent;
-import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.MinecraftClient;
@@ -16,7 +15,7 @@ import net.minecraft.item.map.MapState;
 
 public class MapTracker extends Module {
     public MapTracker() {
-        super(CISAddon.CATEGORY, "map-tracker", "Muestra el ID y coordenadas del mapa que sostienes.");
+        super(CISAddon.CATEGORY, "map-tracker", "Muestra el ID y coordenadas del mapa que sostienes (en cualquier mano).");
     }
 
     @EventHandler
@@ -24,18 +23,47 @@ public class MapTracker extends Module {
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.player == null || mc.world == null) return;
 
-        ItemStack stack = mc.player.getMainHandStack();
-        if (!stack.isOf(Items.FILLED_MAP)) return;
+        // Obtener mapas de ambas manos
+        ItemStack main = mc.player.getMainHandStack();
+        ItemStack off = mc.player.getOffHandStack();
 
-        // Obtener el componente de ID del mapa
-        MapIdComponent mapIdComponent = stack.get(DataComponentTypes.MAP_ID);
-        if (mapIdComponent == null) return;
+        ItemStack mapStack = null;
+        boolean isMain = false;
 
-        // Obtener el estado del mapa usando el componente
+        if (main.isOf(Items.FILLED_MAP)) {
+            mapStack = main;
+            isMain = true;
+        } else if (off.isOf(Items.FILLED_MAP)) {
+            mapStack = off;
+            isMain = false;
+        } else {
+            error("No tienes un mapa en ninguna mano.");
+            toggle();
+            return;
+        }
+
+        MapIdComponent mapIdComponent = mapStack.get(DataComponentTypes.MAP_ID);
+        if (mapIdComponent == null) {
+            error("El mapa no tiene un ID válido.");
+            toggle();
+            return;
+        }
+
         ClientWorld world = mc.world;
         MapState mapState = world.getMapState(mapIdComponent);
-        if (mapState == null) return;
+        if (mapState == null) {
+            error("No se pudo obtener el estado del mapa.");
+            toggle();
+            return;
+        }
 
-    toggle(); // Disable module after showing info
+        int centerX = ((MapStateAccessor) mapState).getCenterX();
+        int centerZ = ((MapStateAccessor) mapState).getCenterZ();
+
+        info("Mapa detectado en la " + (isMain ? "mano principal" : "mano secundaria") + ".");
+        info("Map ID: " + mapIdComponent.id());
+        info("Map center: X=" + centerX + ", Z=" + centerZ);
+
+        toggle();
     }
 }
